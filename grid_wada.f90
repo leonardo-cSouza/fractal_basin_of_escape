@@ -211,54 +211,60 @@ subroutine stepq (xi, yi, xf, yf, q, n, x, y)
 end subroutine stepq
 
 Subroutine Map (xk,yk,saida)
-  integer, parameter :: dp=kind(0.d0)
-  real(dp) :: pi, s, p, xk, yk, x, y, xe
+   integer, parameter :: dp=kind(0.d0)
+  real(dp) :: pi, s, p, xk, yk, x, y, xe, E_r, q_factor, v_parallel, R1, R2
+  real(dp) :: w0, R_major, phi, alpha, gama, beta, modoM, modoL
   integer :: Npts, saida, k, sinal
  ! real*8 pi, s, p, xk, yk, x, y, xe
  ! integer*4 Npts, saida, k, sinal
   common/parameters/ pi, s, p, Npts
+  R_major = 10.d0/3.0d0
+  w0 = 16.364d0
+  modoM=15.d0
+  modoL=6.d0
+  alpha = 3.570d0
+  beta = -7.921d0
+  gama = 4.132d0      
+  phi= 9.84d-3 
   k =0
   sinal=0
-  xe=-1.d0
+  xe=1.0d0/6.0d0
   do while ((k.lt.Npts).and.(sinal.eq.0))
-     x = xk + s*yk - p*dexp(-yk)*dcos(xk) + s*(dlog(dabs(dcos(xk - p*dexp(-yk)*dcos(xk)))) - dlog(dabs(dcos(xk))))
-     y = yk + dlog(dabs(dcos(xk - p*dexp(-yk)*dcos(xk)))) - dlog(dabs(dcos(xk))) 
-     
-     if (y.lt. 0.0) then
-        xe = xk - (x - xk)*yk/(y - yk)
-        sinal=1
-     endif
-     
-     do while (x .lt. 0.0d0)
-        x = x + 2.0d0*pi
-     enddo
-     
-     do while (x .gt. 2.0d0*pi)
-        x = x - 2.0d0*pi
-     enddo
-     
-     xk = x
-     yk = y
-     k=k+1
-  enddo
-  
-  do while (xe.lt.0.0)
-     xe = xe + 2.0*pi
-  enddo
-  
-  do while (xe.gt.2.0*pi)
-     xe = xe - 2.0*pi
+    y = yk + 4.0d0*pi*modoM*phi*dsin(xk*2.0d0*pi)/(w0)
+    q_factor = 5.0d0 - 6.3*y**2 + 6.3*y**3
+    v_parallel = -9.867d0 + 17.478d0*dtanh(10.1d0*y - 9.0d0)
+    E_r = 3.0d0*alpha*y + 2.0d0*beta*dsqrt(dabs(y)) + gama
+    R1 = (modoM-modoL*q_factor)*v_parallel/(w0*R_major*q_factor)
+    R2 = -E_r*modoM/(w0*dsqrt(dabs(y)))
+    x = xk + R1 + R2         
+    x = dabs(x)
+    x = x - int(x/(1.0d0))
+      
+    if (x .lt. -0.5d0) then
+        x=x+1.d0
+    endif
+    if (x .gt. 0.5d0) then
+        x=x-1.d0
+    endif
+    !if(k>1) then
+        if(y>1.0d0.and.yk<1.0d0) then
+            sinal = 1
+        endif
+    !endif
+    xk = x
+    yk = y
+    k=k+1
   enddo
    if (sinal == 1) then
-      if (xe>=0.d0 .and. xe<2.d0*pi/3.d0) then
+      if (x>=-0.5d0 .and. x<-xe) then
          saida = 1
       endif    
-      if(xe>=2.d0*pi/3.d0 .and. xe<4.d0*pi/3.d0) then
+      if(x>=-xe .and. x<xe) then
          saida = 2
       endif
-      if(xe>4.d0*pi/3.d0 .and. xe<=2.0d0*pi) then
+      if(x>=xe .and. x<=0.5d0) then
          saida = 3
-         endif
+      endif
       else 
          saida = 0
       endif
