@@ -1,7 +1,9 @@
 # fractal_basin_of_escape
 Code repository accompanying the publication "Fractal and Wada escape basins in the chaotic particle drift motion in tokamaks with electrostatic fluctuations".
 
-This project contains the code to generate and plot the data from all figures.
+This project contains the code to generate and plot the data from all figures and tables. 
+
+The program dimensao_horton.f90 calulate the dimension of the basins boundary of the horton map for a given value of the parameter phi, use ``` gfortran dimensao_horton.f90 -o exe.x ``` and execute ```exe.x``` to run. 
 
 ## Figure 1
 
@@ -33,7 +35,7 @@ To obtain the data used in Figure 7, use ``` gfortran manifolds.f90 -o exe.x ```
 
 ## Figure 8
 
-To obtain the data used in Figure 8....
+To obtain the data used in Figure 8 use ``` python Calculate_sb.py 1000 5 5 <input.dat> output.dat ``` where the input is the third file generate by basins_horton.f90 1000 is the number of boxes use and 5 is the sidelenght, do this for different values of phi and plot the entropy as a function of k. To calulate the basin boundary entropy add a if in if(i1 != 0 and i2 !=0) in the calculate_sb.	
 
 ## Figure 9
 
