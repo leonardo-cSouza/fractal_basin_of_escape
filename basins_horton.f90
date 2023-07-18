@@ -62,7 +62,7 @@ program basins_horton
             yk = y              
             k = k + 1
          end do  
-         ! Her we write the values of x and y (initial conditions) if they have escape in 1 if the exit is 1 
+         ! Here, we write the values of x and y (initial conditions) if they have escape in 1 if the exit is 1 
          ! or 2 if it is the second exit
          ! Combine the two files and with them we plot the basins and also the escape time.
          if (saida == 1) then
@@ -71,7 +71,7 @@ program basins_horton
          if (saida == 2) then
             write(2,"(f10.6,f10.6,f10.5,i10)") aux1, aux2, 2.0d0*pi, k
          endif
-         write(3,"(i10)") saida
+         write(3,"(f10.6,f10.6,i10)") aux1, aux2, saida
       end do    
    end do
 close(1) 
